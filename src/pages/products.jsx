@@ -22,15 +22,6 @@ const dataProducts = [
     quibusdam placeat tempore inventore quaerat neque veritatis? Impedit,
     cumque! Reiciendis sunt cupiditate minima.`,
   },
-  // {
-  //   id: 3,
-  //   image: "/images/iphone_14_pro_max.webp",
-  //   name: "Iphone 14 Pro Max",
-  //   price: "Rp. 16.500.000",
-  //   description: `Lorem ipsum dolor sit amet consectetur adipisicing elit. Facere
-  //   quibusdam placeat tempore inventore quaerat neque veritatis? Impedit,
-  //   cumque! Reiciendis sunt cupiditate minima.`,
-  // },
 ];
 
 const email = localStorage.getItem("email");
@@ -38,10 +29,31 @@ const email = localStorage.getItem("email");
 const ProductsPage = () => {
   const [cart, setCart] = useState([
     {
-      name: "Iphone 14 Pro Max",
-      qty: 3,
+      id: 1,
+      qty: 1,
     },
   ]);
+
+  const handleAddToCart = (id) => {
+    const existingItem = cart.find((item) => item.id === id);
+
+    if (existingItem) {
+      // Jika produk sudah ada di dalam keranjang, tambahkan qty
+      const updatedCart = cart.map((item) =>
+        item.id === id ? { ...item, qty: item.qty + 1 } : item
+      );
+      setCart(updatedCart);
+    } else {
+      // Jika produk belum ada di dalam keranjang, tambahkan produk baru
+      setCart([
+        ...cart,
+        {
+          id,
+          qty: 1,
+        },
+      ]);
+    }
+  };
 
   const handleLogout = () => {
     localStorage.clear();
@@ -64,19 +76,54 @@ const ProductsPage = () => {
               <CardProduct.Body name={product.name}>
                 {product.description}
               </CardProduct.Body>
-              <CardProduct.Footer price={product.price} />
+              <CardProduct.Footer
+                price={product.price}
+                id={product.id}
+                addToCart={handleAddToCart}
+              />
             </CardProduct>
           ))}
         </div>
-        <div className="w-1/4">
+        <div className="w-1/2">
           <div className="text-3xl font-bold text-blue-600">Cart</div>
-          <ul>
-            {cart.map((item) => (
-              <li key={item.name}>{item.name}</li>
-            ))}
-          </ul>
+          <table className="min-w-max text-center py-2 mt-3 px-2 bg-white border border-gray-300">
+            <thead className="bg-gray-100">
+              <tr>
+                <th className="py-2">Product</th>
+                <th className="py-2">Price</th>
+                <th className="py-2">Quantity</th>
+                <th className="py-2">Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              {cart.map((item) => {
+                const product = dataProducts.find(
+                  (product) => product.id === item.id
+                );
+                return (
+                  <tr key={item.id} className="border-t">
+                    <td className="py-2 px-2">{product.name}</td>
+                    <td className="py-2 px-2">
+                      Rp{" "}
+                      {product.price.toLocaleString("id-ID", {
+                        styles: "currency",
+                        currency: "IDR",
+                      })}
+                    </td>
+                    <td className="py-2 px-2">{item.qty}</td>
+                    <td className="py-2 px-2">
+                      Rp{" "}
+                      {(product.price * item.qty).toLocaleString("id-ID", {
+                        styles: "currency",
+                        currency: "IDR",
+                      })}
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
         </div>
-
         <script async src="https://www.tiktok.com/embed.js"></script>
       </div>
     </>
