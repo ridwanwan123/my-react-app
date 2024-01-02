@@ -3,17 +3,26 @@ import { useEffect, useRef, useState } from "react";
 import Button from "../Components/Elements/Button";
 import CardProduct from "../Components/Fragments/CardProduct";
 import { getProducts } from "../service/product.service";
-
-const email = localStorage.getItem("email");
+import { getUsername } from "../service/auth.service";
 
 const ProductsPage = () => {
   const [cart, setCart] = useState([]);
   const [totalPrice, setTotalPrice] = useState(0);
   const [products, setProducts] = useState([]);
+  const [username, setUsername] = useState("");
 
   useEffect(() => {
     setCart(JSON.parse(localStorage.getItem("cart")) || []);
   }, []);
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      setUsername(getUsername(token));
+    } else {
+      window.location.href = "/login";
+    }
+  });
 
   useEffect(() => {
     getProducts((data) => {
@@ -72,14 +81,14 @@ const ProductsPage = () => {
   });
 
   const handleLogout = () => {
-    localStorage.clear();
+    localStorage.removeItem("token");
     window.location.href = "/login";
   };
 
   return (
     <>
       <div className="flex justify-end h-20 bg-blue-600 text-white items-center px-10 ">
-        <p className="mr-4">{email}</p>
+        <p className="mr-4">{username}</p>
         <Button variant="bg-black" onClick={handleLogout}>
           Logout
         </Button>
