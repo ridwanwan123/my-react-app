@@ -1,7 +1,8 @@
 /* eslint-disable react/jsx-key */
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Button from "../Components/Elements/Button";
 import CardProduct from "../Components/Fragments/CardProduct";
+import Counter from "../Components/Fragments/Counter";
 
 const dataProducts = [
   {
@@ -27,12 +28,23 @@ const dataProducts = [
 const email = localStorage.getItem("email");
 
 const ProductsPage = () => {
-  const [cart, setCart] = useState([
-    {
-      id: 1,
-      qty: 1,
-    },
-  ]);
+  const [cart, setCart] = useState([]);
+  const [totalPrice, setTotalPrice] = useState(0);
+
+  useEffect(() => {
+    setCart(JSON.parse(localStorage.getItem("cart")) || []);
+  }, []);
+
+  useEffect(() => {
+    if (cart.length > 0) {
+      const sum = cart.reduce((acc, item) => {
+        const product = dataProducts.find((product) => product.id === item.id);
+        return acc + product.price * item.qty;
+      }, 0);
+      setTotalPrice(sum);
+      localStorage.setItem("cart", JSON.stringify(cart));
+    }
+  }, [cart]);
 
   const handleAddToCart = (id) => {
     const existingItem = cart.find((item) => item.id === id);
@@ -121,11 +133,25 @@ const ProductsPage = () => {
                   </tr>
                 );
               })}
+              <tr>
+                <td colSpan={3} className="font-bold">
+                  Total Price
+                </td>
+                <td className="font-bold">
+                  Rp{" "}
+                  {totalPrice.toLocaleString("id-ID", {
+                    styles: "currency",
+                    currency: "IDR",
+                  })}
+                </td>
+              </tr>
             </tbody>
           </table>
         </div>
-        <script async src="https://www.tiktok.com/embed.js"></script>
       </div>
+      {/* <div className="mt-5 flex justify-center">
+        <Counter></Counter>
+      </div> */}
     </>
   );
 };
