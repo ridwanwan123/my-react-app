@@ -3,26 +3,17 @@ import { useEffect, useRef, useState } from "react";
 import Button from "../Components/Elements/Button";
 import CardProduct from "../Components/Fragments/CardProduct";
 import { getProducts } from "../service/product.service";
-import { getUsername } from "../service/auth.service";
+import { useLogin } from "../hooks/useLogin";
 
 const ProductsPage = () => {
   const [cart, setCart] = useState([]);
   const [totalPrice, setTotalPrice] = useState(0);
   const [products, setProducts] = useState([]);
-  const [username, setUsername] = useState("");
+  const username = useLogin();
 
   useEffect(() => {
     setCart(JSON.parse(localStorage.getItem("cart")) || []);
   }, []);
-
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      setUsername(getUsername(token));
-    } else {
-      window.location.href = "/login";
-    }
-  });
 
   useEffect(() => {
     getProducts((data) => {
@@ -63,12 +54,12 @@ const ProductsPage = () => {
   };
 
   // useRef
-  const cartRef = useRef(JSON.parse(localStorage.getItem("cart")) || []);
+  // const cartRef = useRef(JSON.parse(localStorage.getItem("cart")) || []);
 
-  const handleAddToCartRef = (id) => {
-    cartRef.current = [...cart.current, { id, qty: 1 }];
-    localStorage.setItem("cart", JSON.stringify(cartRef.current));
-  };
+  // const handleAddToCartRef = (id) => {
+  //   cartRef.current = [...cart.current, { id, qty: 1 }];
+  //   localStorage.setItem("cart", JSON.stringify(cartRef.current));
+  // };
 
   const totalPriceRef = useRef(null);
 
@@ -98,7 +89,7 @@ const ProductsPage = () => {
           {products.length > 0 &&
             products.map((product) => (
               <CardProduct key={product.id}>
-                <CardProduct.Header image={product.image} />
+                <CardProduct.Header image={product.image} id={product.id} />
                 <CardProduct.Body name={product.title}>
                   {product.description}
                 </CardProduct.Body>
