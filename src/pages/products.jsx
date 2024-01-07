@@ -1,13 +1,16 @@
 /* eslint-disable react/jsx-key */
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import CardProduct from "../Components/Fragments/CardProduct";
 import { getProducts } from "../service/product.service";
 import { useLogin } from "../hooks/useLogin";
 import TableCart from "../Components/Fragments/TableCart";
 import { Navbar } from "../Components/Layouts/Navbar";
+import { DarkMode } from "../context/DarkMode";
 
 const ProductsPage = () => {
   const [products, setProducts] = useState([]);
+  const { isDarkMode } = useContext(DarkMode);
+
   useLogin();
 
   useEffect(() => {
@@ -48,7 +51,9 @@ const ProductsPage = () => {
   return (
     <>
       <Navbar />
-      <div className="flex justify-center py-20">
+      <div
+        className={`flex justify-center py-20 ${isDarkMode && "bg-slate-900"}`}
+      >
         <div className="w-3/4 flex flex-wrap">
           {products.length > 0 &&
             products.map((product) => (
